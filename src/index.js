@@ -40,7 +40,14 @@ async function main() {
   log(`Platform: ${platform} (${platformKey})`);
 
   // Fetch download URLs from the website's config.json
-  const siteUrl = new URL(pkg.homepage).origin;
+  const ALLOWED_CONFIG_HOSTS = ['somiibo.com'];
+  const homepageUrl = new URL(pkg.homepage);
+
+  if (!ALLOWED_CONFIG_HOSTS.includes(homepageUrl.hostname)) {
+    throw new Error(`Refusing to fetch config from untrusted host: ${homepageUrl.hostname}`);
+  }
+
+  const siteUrl = homepageUrl.origin;
   const configUrl = `${siteUrl}/config.json`;
   log(`Fetching download info from ${configUrl}...`);
 
